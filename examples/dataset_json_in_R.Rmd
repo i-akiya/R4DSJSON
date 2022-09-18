@@ -1,0 +1,19 @@
+---
+title: "An example to read from dataset json and to display in data grid."
+output: html_document
+---
+
+```{r setup, echo=FALSE, include=FALSE}
+library(dplyr)
+library(R4DSJSON)
+library(DT)
+```
+
+### DM dataset example
+```{r, echo=TRUE, }
+DmJson <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
+dm <- R4DSJSON::read.dataset.json(DmJson, object_type = "tibble") %>% 
+        dplyr::select(-ITEMGROUPDATASEQ)
+
+datatable(dm, options = list(pageLength = 5, scrollX='400px'))
+```

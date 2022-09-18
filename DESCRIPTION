@@ -1,0 +1,19 @@
+Package: R4DSJSON
+Type: Package
+Title: Import and Export CDISC Dataset-Json files
+Version: 0.1.0
+Author: Ippei Akiya
+Maintainer: Ippei Akiya <ippei.akiya@gmail.com>
+Description: Import CDISC Dataset-Json files into R dataframe and Export it from R dataframe.
+License: MIT
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.2.1
+Imports: 
+        RCurl,
+        tibble,
+        dplyr,
+        jsonlite,
+        purrrlyr
+Suggests:
+        testthat
