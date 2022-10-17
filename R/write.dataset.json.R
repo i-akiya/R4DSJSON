@@ -1,57 +1,27 @@
-#' read.dataset.json.tibble
-#'
-#' @param dataset_json filepath to dataset-json file as string
-#'
-#' @return tibble
-#'
-#' @export
-#'
-#' @examples
-#' library(dplyr)
-#' json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
-#' dm_tibble <- R4DSJSON::read.dataset.json.tibble(json_file)
-read.dataset.json.tibble <- function( dataset_json ){
-        deserialized_data <- jsonlite::fromJSON(dataset_json)
-        items <- deserialized_data$clinicalData$itemGroupData[[1]]$items
-        column_names <- items["name"] %>%
-                unlist()
-        integer_column <- deserialized_data$clinicalData$itemGroupData$IG.DM$items %>%
-                dplyr::filter(type == "integer") %>%
-                dplyr::select(name) %>%
-                unlist() %>%
-                setNames(NULL)
-
-        item_data <- deserialized_data$clinicalData$itemGroupData[[1]]$itemData %>%
-                data.frame()
-        names(item_data) <- column_names
-
-        item_data <- item_data %>%
-                purrrlyr::dmap(unlist)
-
-        if (length(integer_column) > 0){
-                item_data <- item_data %>%
-                        purrrlyr::dmap_at(integer_column, as.integer)
-        }
-
-        return(item_data)
-}
-
-
-#' read.dataset.json.dataframe
-#'
-#' @param dataset_json filepath to dataset-json file as string
-#'
-#' @return dataframe
+#' write.dataset.json
+#' Write Dataset-Json file.
+#' @param file file path to dataset-json as string
+#' @param dataframe Tibble dataframe with variable labels
+#' @param studyOID Specify Study OID as String
+#' @param metaDataVersionOID Specify Metadata Version OID as string
+#' @param dataset.name Specify dataset name as string
+#' @param dataset.label Specify dataset label as string
+#' @param pretty.format TRUE for generating a Dataset-Json string with pretty format
 #'
 #' @export
 #'
 #' @examples
-#' library(dplyr)
-#' json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
-#' dm_dataframe <- R4DSJSON::read.dataset.json.dataframe(json_file)
-read.dataset.json.dataframe <- function( dataset_json ){
-        df <- read.dataset.json.tibble(dataset_json) %>%
-                as.data.frame()
+#' \dontrun{
+#' write.dataset.json(file="dm.json", dataframe=dm, studyOID="cdisc.com/CDISCPILOT01",
+#'                  metaDataVersionOID="MDV.MSGv2.0.SDTMIG.3.3.SDTM.1.7",
+#'                  dataset.name="DM", dataset.label="Demographics")
+#' }
+write.dataset.json <- function(file, dataframe, studyOID, metaDataVersionOID,
+                               dataset.name, dataset.label, pretty.format=FALSE){
 
-        return(df)
+        dataset_json <- gen.dataset.json(dataframe, studyOID, metaDataVersionOID,
+                                         dataset.name, dataset.label, pretty.format)
+
+        write(dataset_json, file=file)
 }
+

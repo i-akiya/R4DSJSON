@@ -1,71 +1,81 @@
 #' read.dataset.json
+#' @importFrom tinylabels variable_label
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr %>%
 #' @export
-#' @param dataset_json dataset-json string
-#' @param object_type Select "tibble" or "dataframe" as return object.
-#' @return tibble or dataframe
+#' @param file file path to dataset-json as string
+#' @return tibble dataframe
 #' @examples
-#' library(dplyr)
-#' json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
-#' dm_tibble <- R4DSJSON::read.dataset.json(dataset_json = json_file, object_type = "tibble")
-#' dm_dataframe <- R4DSJSON::read.dataset.json(dataset_json = json_file, object_type = "dataframe")
-read.dataset.json <- function(dataset_json,
-                              object_type = c("tibble", "dataframe")){
-        if (object_type %in% c("tibble", "dataframe") == FALSE) {
-                stop(paste0("\"",
-                            object_type,
-                            "\" is assigned to object_type argument,",
-                            " but object_type argument can accept only \"tibble\" or \"dataframe\".")
-                     )
+#' \dontrun{
+#' dm <- read.dataset.json(file = "dm.json")
+#' }
+read.dataset.json <- function(file){
+
+        if (file.exists(file) == FALSE){
+                stop(paste0("error: \"", file, "\" is not found."))
         }
 
-        deserialized_data <- jsonlite::fromJSON(dataset_json)
+        deserialized_data <- jsonlite::fromJSON(file)
         items <- deserialized_data$clinicalData$itemGroupData[[1]]$items
         item_data <- deserialized_data$clinicalData$itemGroupData[[1]]$itemData
 
+        # Variable names
         column_names <- items["name"] %>%
                 unlist() %>%
                 unname()
 
         colnames(item_data) <- column_names
 
+        # Variable labels
+        column_labels <- items["label"] %>%
+                base::unlist() %>%
+                base::unname()
+
+
         # Detect integer type columns
         integer_column <- items %>%
                 dplyr::filter(type == "integer") %>%
                 dplyr::select(name) %>%
-                unlist() %>%
-                setNames(NULL)
+                base::unlist() %>%
+                stats::setNames(NULL)
 
         # Detect float type columns
         float_column <- items %>%
                 dplyr::filter(type == "float") %>%
                 dplyr::select(name) %>%
-                unlist() %>%
-                setNames(NULL)
+                base::unlist() %>%
+                stats::setNames(NULL)
 
         item_data_tbl <- item_data %>%
                 tibble::as_tibble()
 
-        # names(item_data_tbl) <- column_names
-
         item_data_tbl <- item_data_tbl %>%
-                purrrlyr::dmap(unlist)
+                purrr::map(unlist)
 
         # Data type conversion from string to integer
         if (length(integer_column) > 0){
-                item_data_tbl <- item_data_tbl %>%
-                        purrrlyr::dmap_at(integer_column, as.integer)
+                for(i in integer_column){
+                        eval(parse(text=paste0("item_data_tbl$", i, " <- ",
+                                               "as.integer(item_data_tbl$", i, ")")))
+                }
         }
 
         # Data type conversion from string to integer
         if (length(float_column) > 0){
-                item_data_tbl <- item_data_tbl %>%
-                        purrrlyr::dmap_at(float_column, as.double)
+                for(i in float_column){
+                        eval(parse(text=paste0("item_data_tbl$", i, " <- ",
+                                               "as.double(item_data_tbl$", i, ")")))
+                }
         }
 
-        if (object_type == "dataframe"){
-                item_data_robj <- item_data_tbl %>% as.data.frame()
-        } else {
-                item_data_robj <- item_data_tbl
+        # Set variable label
+        for (i in 1:length(column_names)) {
+                eval(parse(text=paste0("tinylabels::variable_label(item_data_tbl$",
+                                       column_names[i], ")",
+                                       " <- ", "\"", column_labels[i], "\"")))
         }
+
+        item_data_robj <- item_data_tbl %>% tibble::as_tibble()
+
         return(item_data_robj)
 }
