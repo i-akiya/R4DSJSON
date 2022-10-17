@@ -11,8 +11,8 @@ library(DT)
 
 ### DM dataset example
 ```{r, echo=TRUE, }
-DmJson <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
-dm <- R4DSJSON::read.dataset.json(DmJson, object_type = "tibble") %>% 
+dm <- R4DSJSON::read.dataset.json(
+        file = system.file("testdata","dm.json", package="R4DSJSON")) %>% 
         dplyr::select(-ITEMGROUPDATASEQ)
 
 datatable(dm, options = list(pageLength = 5, scrollX='400px'))

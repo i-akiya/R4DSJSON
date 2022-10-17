@@ -5,15 +5,15 @@ Version: 0.1.0
 Author: Ippei Akiya
 Maintainer: Ippei Akiya <ippei.akiya@gmail.com>
 Description: Import CDISC Dataset-Json files into R dataframe and Export it from R dataframe.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.1
 Imports: 
-        RCurl,
         tibble,
         dplyr,
         jsonlite,
-        purrrlyr
+        purrr,
+        tinylabels
 Suggests:
         testthat

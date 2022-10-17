@@ -4,22 +4,19 @@
 \alias{read.dataset.json}
 \title{read.dataset.json}
 \usage{
-read.dataset.json(dataset_json, object_type = c("tibble", "dataframe"))
+read.dataset.json(file)
 }
 \arguments{
-\item{dataset_json}{dataset-json string}
-
-\item{object_type}{Select "tibble" or "dataframe" as return object.}
+\item{file}{file path to dataset-json as string}
 }
 \value{
-tibble or dataframe
+tibble dataframe
 }
 \description{
 read.dataset.json
 }
 \examples{
-library(dplyr)
-json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
-dm_tibble <- R4DSJSON::read.dataset.json(dataset_json = json_file, object_type = "tibble")
-dm_dataframe <- R4DSJSON::read.dataset.json(dataset_json = json_file, object_type = "dataframe")
+\dontrun{
+dm <- read.dataset.json(file = "dm.json")
+}
 }

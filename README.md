@@ -20,13 +20,14 @@ install_github("i-akiya/R4DSJSON")
 ```
 library(R4DSJSON)  
 
-# Import dm.json file as tibbl
-dm_json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
-dm_tibble <- R4DSJSON::read.dataset.json(dataset_json = dm_json_file, object_type = "tibble")
+# Read dm.json file as tibbl
+dm_json_file <- system.file("testdata","dm.json", package="R4DSJSON")
+dm_tibble <- R4DSJSON::read.dataset.json(file = dm_json_file)
 
-# Import lb.json file as tibbl
-lb_json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/lb.json")
-lb_tibble <- R4DSJSON::read.dataset.json(dataset_json = lb_json_file, object_type = "tibble")
+# Write Dataset-Json file from R dataframe
+write.dataset.json(file="dm.json", dataframe=dm_tibble, studyOID="cdisc.com/CDISCPILOT01",
+                  metaDataVersionOID="MDV.MSGv2.0.SDTMIG.3.3.SDTM.1.7",
+                  dataset.name="DM", dataset.label="Demographics")
 ```
 
 ## Examples
@@ -54,7 +55,8 @@ Contribution is very welcome. When you contribute to this repository you are doi
 3. Create pull request. Please see [this guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork) how to make pull request from fork.
   
 ## References
-
+* https://github.com/cdisc-org/DataExchange-DatasetJson
+* https://wiki.cdisc.org/display/DSJSONHACK/Introduction
 
 
 

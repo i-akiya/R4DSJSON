@@ -1,9 +1,5 @@
-library(testthat)
-
-dm_json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/dm.json")
-dm_tibble <- R4DSJSON::read.dataset.json(dataset_json = dm_json_file, object_type = "tibble")
-lb_json_file <- RCurl::getURL("https://raw.githubusercontent.com/cdisc-org/DataExchange-DatasetJson/master/examples/sdtm/lb.json")
-lb_tibble <- R4DSJSON::read.dataset.json(dataset_json = lb_json_file, object_type = "tibble")
+dm_tibble <- read.dataset.json(file = system.file("testdata","dm.json", package="R4DSJSON"))
+lb_tibble <- read.dataset.json(file = system.file("testdata","lb.json", package="R4DSJSON"))
 
 
 test_that("Check number of records", {
